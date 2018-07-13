@@ -86,7 +86,7 @@ int main() {
       }
     }
     
-    cout << "failure:" << (failure?"true":"false") << endl;
+    cout << (failure?"test failed":"test passed") << endl;
     cout << endl;
     delete [] bob;
 
