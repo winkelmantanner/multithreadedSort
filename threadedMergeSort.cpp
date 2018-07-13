@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdlib>
-#include <future>
+#include <future> // C++11
+#include <chrono> // C++11
 using namespace std;
 
 const long SIZE = 32767000;
@@ -63,7 +64,14 @@ int main() {
   }
   cout << endl;
   
-  myMergesort( bob, SIZE, 4);
+  chrono::time_point<std::chrono::system_clock> start, end;
+  
+  start = chrono::system_clock::now();
+  myMergesort( bob, SIZE, 8);
+  end = chrono::system_clock::now();
+  
+  chrono::duration<double> elapsed_seconds = end - start;
+  cout << elapsed_seconds.count() << " seconds" << endl;
   
   for( long k = 0; k < SIZE - 1; k++ ) {
     if( bob[k] > bob[k+1] ) {
@@ -71,6 +79,7 @@ int main() {
       break;
     }
   }
+  
   cout << "failure:" << (failure?"true":"false") << endl;
   cout << endl;
   delete [] bob;
