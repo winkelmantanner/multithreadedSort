@@ -4,8 +4,6 @@
 #include <chrono> // C++11
 using namespace std;
 
-const long SIZE = 32767000;
-
 template<typename T>
 void myMerge(const T *const source, T *const dest, const long min, const long mid, const long max) {
   long destIndex = min;
@@ -57,32 +55,50 @@ int myMergesort(T * target, const long length, const short numThreads = 1 ) {
 
 
 int main() {
-  unsigned long long * bob = new unsigned long long[SIZE];
-  bool failure = false;
-  for( long j = 0; j < SIZE; j++ ) {
-    bob[j] = rand() % SIZE;
-  }
-  cout << endl;
+  short numThreads;
+  long dataSize;
+  cout << "# threads: ";
+  cin >> numThreads;
+  cout << "# data elements: ";
+  cin >> dataSize;
   
-  chrono::time_point<std::chrono::system_clock> start, end;
-  
-  start = chrono::system_clock::now();
-  myMergesort( bob, SIZE, 8);
-  end = chrono::system_clock::now();
-  
-  chrono::duration<double> elapsed_seconds = end - start;
-  cout << elapsed_seconds.count() << " seconds" << endl;
-  
-  for( long k = 0; k < SIZE - 1; k++ ) {
-    if( bob[k] > bob[k+1] ) {
-      failure = true;
-      break;
+  while(numThreads > 0 && dataSize > 0) {
+    unsigned long long * bob = new unsigned long long[dataSize];
+    bool failure = false;
+    for( long j = 0; j < dataSize; j++ ) {
+      bob[j] = rand() % dataSize;
     }
+    cout << endl;
+    
+    chrono::time_point<std::chrono::system_clock> start, end;
+    
+    start = chrono::system_clock::now();
+    myMergesort( bob, dataSize, numThreads);
+    end = chrono::system_clock::now();
+    
+    chrono::duration<double> elapsed_seconds = end - start;
+    cout << elapsed_seconds.count() << " seconds" << endl;
+    
+    for( long k = 0; k < dataSize - 1; k++ ) {
+      if( bob[k] > bob[k+1] ) {
+        failure = true;
+        break;
+      }
+    }
+    
+    cout << "failure:" << (failure?"true":"false") << endl;
+    cout << endl;
+    delete [] bob;
+
+    cout << "# threads (0 to quit): ";
+    cin >> numThreads;
+    if( numThreads > 0 ) {
+      cout << "# data elements (0 to quit): ";
+      cin >> dataSize;
+    }
+    
   }
-  
-  cout << "failure:" << (failure?"true":"false") << endl;
-  cout << endl;
-  delete [] bob;
+
   return 0;
 }
 
