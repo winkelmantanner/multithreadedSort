@@ -51,7 +51,39 @@ void myMergesort(T * target, const long length, const short numThreads = 1 ) {
   delete [] auxiliary;
 }
 
+const long WEIGHT = 10000;
+struct Heavy {
+  char s[WEIGHT];
+  unsigned long long comparable;
+  Heavy(unsigned long long value) {
+    comparable = value;
+    for( long k = 0; k < WEIGHT; k++ ) {
+      s[k] = 'a';
+    }
+  }
+  Heavy(){
+    *this = Heavy(0);
+  }
+  Heavy & operator=(const unsigned long long rhs);
+  Heavy & operator=(const Heavy & rhs);
+};
 
+Heavy & Heavy::operator=(const unsigned long long rhs) {
+  this->comparable = rhs;
+  return *this;
+}
+
+Heavy & Heavy::operator=(const Heavy & rhs) {
+  this->comparable = rhs.comparable;
+  for( long k = 0; k < WEIGHT; k++ ) {
+    this->s[k] = rhs.s[k];
+  }
+  return *this;
+}
+
+bool operator<(const Heavy & lhs, const Heavy & rhs) {
+  return lhs.comparable < rhs.comparable;
+}
 
 int main() {
   short numThreads;
@@ -62,7 +94,7 @@ int main() {
   cin >> dataSize;
   
   while(numThreads > 0 && dataSize > 0) {
-    unsigned long long * bob = new unsigned long long[dataSize];
+    Heavy * bob = new Heavy[dataSize];
     bool failure = false;
     for( long j = 0; j < dataSize; j++ ) {
       bob[j] = rand() % dataSize;
@@ -79,7 +111,7 @@ int main() {
     cout << elapsed_seconds.count() << " seconds" << endl;
     
     for( long k = 0; k < dataSize - 1; k++ ) {
-      if( bob[k] > bob[k+1] ) {
+      if( bob[k+1] < bob[k] ) {
         failure = true;
         break;
       }
