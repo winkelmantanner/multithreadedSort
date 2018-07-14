@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cstdlib>
-#include <future> // C++11
+#include <thread> // C++11
 #include <chrono> // C++11
 using namespace std;
 
@@ -28,10 +28,10 @@ void myMergesortRecursive(T * target, T * auxiliary, const long min, const long 
   }
   long mid = (max + min + 1) / 2;
   if( numThreads >= 2 ) {
-    future<void> f1 = async(&myMergesortRecursive<T>, auxiliary, target, min, mid - 1, numThreads / 2);
-    future<void> f2 = async(&myMergesortRecursive<T>, auxiliary, target, mid, max, (numThreads + 1) / 2);
-    f1.get();
-    f2.get();
+    thread f1 (&myMergesortRecursive<T>, auxiliary, target, min, mid - 1, numThreads / 2);
+    thread f2 (&myMergesortRecursive<T>, auxiliary, target, mid, max, (numThreads + 1) / 2);
+    f1.join();
+    f2.join();
   } else {
     myMergesortRecursive(auxiliary, target, min, mid-1, 1);
     myMergesortRecursive(auxiliary, target, mid, max, 1);
@@ -40,7 +40,7 @@ void myMergesortRecursive(T * target, T * auxiliary, const long min, const long 
 }
 
 template<typename T>
-int myMergesort(T * target, const long length, const short numThreads = 1 ) {
+void myMergesort(T * target, const long length, const short numThreads = 1 ) {
   T * auxiliary = new T[length];
   for( long k = 0; k < length; k++ ) {
     auxiliary[k] = target[k];
@@ -49,7 +49,6 @@ int myMergesort(T * target, const long length, const short numThreads = 1 ) {
   myMergesortRecursive(target,auxiliary,0,length-1,numThreads);
 
   delete [] auxiliary;
-  return 0;
 }
 
 
