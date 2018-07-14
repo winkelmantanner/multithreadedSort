@@ -5,6 +5,31 @@
 using namespace std;
 
 template<typename T>
+class ComparableWrapper {
+private:
+  const T * m_dataPointer;
+  long m_index;
+  
+public:
+  ComparableWrapper() : m_dataPointer(NULL), m_index(-1) {}
+  ComparableWrapper( const T & t ) : m_dataPointer(&t), m_index(-1) {}
+  ComparableWrapper( const T & t, const long index ) : m_dataPointer(&t), m_index(index) {}
+  const T& getData() const { return *(this->m_dataPointer); }
+  const long getIndex() const { return this->m_index; }
+  ComparableWrapper<T> & operator=( const ComparableWrapper<T> & rhs ) {
+    this->m_index = rhs.m_index;
+    this->m_dataPointer = rhs.m_dataPointer;
+    return *this;
+  }
+};
+
+template<typename T>
+bool operator<( const ComparableWrapper<T> & lhs, const ComparableWrapper<T> & rhs ) {
+  return lhs.getData() < rhs.getData();
+}
+
+
+template<typename T>
 void myMerge(const T *const source, T *const dest, const long min, const long mid, const long max) {
   long destIndex = min;
   long lowerIndex = min;
@@ -41,17 +66,76 @@ void myMergesortRecursive(T * target, T * auxiliary, const long min, const long 
 
 template<typename T>
 void myMergesort(T * target, const long length, const short numThreads = 1 ) {
-  T * auxiliary = new T[length];
+  ComparableWrapper<T> * auxiliary1 = new ComparableWrapper<T>[length];
+  ComparableWrapper<T> * auxiliary2 = new ComparableWrapper<T>[length];
   for( long k = 0; k < length; k++ ) {
-    auxiliary[k] = target[k];
+    auxiliary1[k] = ComparableWrapper<T>(target[k], k);
+    auxiliary2[k] = ComparableWrapper<T>(target[k], k);
   }
   
-  myMergesortRecursive(target,auxiliary,0,length-1,numThreads);
-
-  delete [] auxiliary;
+  
+  myMergesortRecursive(auxiliary1,auxiliary2,0,length-1,numThreads);
+  
+  delete [] auxiliary2;
+  
+  long swapSpaceIndex = 0;
+  T swapSpace;
+  bool * done = new bool[length];
+  for( long k = 0; k < length; k++ ) {
+    done[k] = false;
+  }
+  while(swapSpaceIndex < length) {
+    if( !done[swapSpaceIndex] ) {
+      swapSpace = target[swapSpaceIndex];
+      long currentIndex = swapSpaceIndex;
+      while(auxiliary1[currentIndex].getIndex() != swapSpaceIndex) {
+        target[currentIndex] = auxiliary1[currentIndex].getData();
+        done[currentIndex] = true;
+        currentIndex = auxiliary1[currentIndex].getIndex();
+      }
+      target[currentIndex] = swapSpace;
+      done[currentIndex] = true;
+    }
+    swapSpaceIndex++;
+  }
+  
+  delete [] done;
+  delete [] auxiliary1;
 }
 
+const long WEIGHT = 10000;
+struct Heavy {
+  char s[WEIGHT];
+  unsigned long long comparable;
+  Heavy(unsigned long long value) {
+    comparable = value;
+    for( long k = 0; k < WEIGHT; k++ ) {
+      s[k] = 'a';
+    }
+  }
+  Heavy(){
+    *this = Heavy(0);
+  }
+  Heavy & operator=(const unsigned long long rhs);
+  Heavy & operator=(const Heavy & rhs);
+};
 
+Heavy & Heavy::operator=(const unsigned long long rhs) {
+  this->comparable = rhs;
+  return *this;
+}
+
+Heavy & Heavy::operator=(const Heavy & rhs) {
+  this->comparable = rhs.comparable;
+  for( long k = 0; k < WEIGHT; k++ ) {
+    this->s[k] = rhs.s[k];
+  }
+  return *this;
+}
+
+bool operator<(const Heavy & lhs, const Heavy & rhs) {
+  return lhs.comparable < rhs.comparable;
+}
 
 int main() {
   short numThreads;
@@ -62,7 +146,7 @@ int main() {
   cin >> dataSize;
   
   while(numThreads > 0 && dataSize > 0) {
-    unsigned long long * bob = new unsigned long long[dataSize];
+    Heavy * bob = new Heavy[dataSize];
     bool failure = false;
     for( long j = 0; j < dataSize; j++ ) {
       bob[j] = rand() % dataSize;
@@ -79,7 +163,7 @@ int main() {
     cout << elapsed_seconds.count() << " seconds" << endl;
     
     for( long k = 0; k < dataSize - 1; k++ ) {
-      if( bob[k] > bob[k+1] ) {
+      if( bob[k+1] < bob[k] ) {
         failure = true;
         break;
       }
