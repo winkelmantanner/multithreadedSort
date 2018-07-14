@@ -142,7 +142,7 @@ int main() {
   long dataSize;
   cout << "# threads: ";
   cin >> numThreads;
-  cout << "# data elements: ";
+  cout << "# data elements (warning: data elements are about " << WEIGHT << " bytes in size): ";
   cin >> dataSize;
   
   while(numThreads > 0 && dataSize > 0) {
@@ -176,7 +176,7 @@ int main() {
     cout << "# threads (0 to quit): ";
     cin >> numThreads;
     if( numThreads > 0 ) {
-      cout << "# data elements (0 to quit): ";
+      cout << "# data elements (about " << WEIGHT << " bytes each) (0 to quit): ";
       cin >> dataSize;
     }
     
