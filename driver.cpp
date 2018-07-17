@@ -1,0 +1,51 @@
+#include "threadedMergeSort.h"
+
+int main() {
+  short numThreads;
+  long dataSize;
+  cout << "# threads: ";
+  cin >> numThreads;
+  cout << "# data elements: ";
+  cin >> dataSize;
+  
+  while(numThreads > 0 && dataSize > 0) {
+    unsigned long long * bob = new unsigned long long[dataSize];
+    bool failure = false;
+    for( long j = 0; j < dataSize; j++ ) {
+      bob[j] = rand() % dataSize;
+    }
+    cout << endl;
+    
+    chrono::time_point<std::chrono::system_clock> start, end;
+    
+    start = chrono::system_clock::now();
+    myMergesort( bob, dataSize, numThreads);
+    end = chrono::system_clock::now();
+    
+    chrono::duration<double> elapsed_seconds = end - start;
+    cout << elapsed_seconds.count() << " seconds" << endl;
+    
+    for( long k = 0; k < dataSize - 1; k++ ) {
+      if( bob[k] > bob[k+1] ) {
+        failure = true;
+        break;
+      }
+    }
+    
+    cout << (failure?"test failed":"test passed") << endl;
+    cout << endl;
+    delete [] bob;
+
+    cout << "# threads (0 to quit): ";
+    cin >> numThreads;
+    if( numThreads > 0 ) {
+      cout << "# data elements (0 to quit): ";
+      cin >> dataSize;
+    }
+    
+  }
+
+  return 0;
+}
+
+
