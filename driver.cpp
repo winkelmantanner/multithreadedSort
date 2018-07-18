@@ -1,5 +1,5 @@
 #include "threadedMergeSort.h"
-#include "threadedQuickSort.h"
+#include "threadedQuicksort.h"
 int main() {
   short numThreads;
   long dataSize;
