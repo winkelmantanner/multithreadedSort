@@ -4,7 +4,7 @@
 #include "commonHeader.h"
 
 template<typename T>
-void quickSortRecursive( T *const arr, const long min, const long max, const short numThreads = 1 ) {
+void quicksortRecursive( T *const arr, const long min, const long max, const short numThreads = 1 ) {
   if( max <= min ) {
     return;
   }
@@ -35,8 +35,8 @@ void quickSortRecursive( T *const arr, const long min, const long max, const sho
   arr[pivotIndex] = pivotValue;
 
   if( numThreads == 1 ){
-    quickSortRecursive( arr, min, pivotIndex - 1, 1 );
-    quickSortRecursive( arr, pivotIndex + 1, max, 1 );
+    quicksortRecursive( arr, min, pivotIndex - 1, 1 );
+    quicksortRecursive( arr, pivotIndex + 1, max, 1 );
   }else {
     short numThreadsOnFirstHalf = 1;
     if( numThreads > 2 ){
@@ -49,8 +49,8 @@ void quickSortRecursive( T *const arr, const long min, const long max, const sho
         numThreadsOnFirstHalf = numThreads - 1;
       }
     }
-    thread t1 (&quickSortRecursive<T>, arr, min, pivotIndex - 1, numThreadsOnFirstHalf );
-    thread t2 (&quickSortRecursive<T>, arr, pivotIndex + 1, max, numThreads - numThreadsOnFirstHalf );
+    thread t1 (&quicksortRecursive<T>, arr, min, pivotIndex - 1, numThreadsOnFirstHalf );
+    thread t2 (&quicksortRecursive<T>, arr, pivotIndex + 1, max, numThreads - numThreadsOnFirstHalf );
     t1.join();
     t2.join();
   }
@@ -58,7 +58,7 @@ void quickSortRecursive( T *const arr, const long min, const long max, const sho
 
 template<typename T>
 void myQuicksort( T *const arr, const long length, const short numThreads = 1 ) {
-  quickSortRecursive( arr, 0, length - 1, numThreads );
+  quicksortRecursive( arr, 0, length - 1, numThreads );
 }
 
 #endif
