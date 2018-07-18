@@ -1,8 +1,7 @@
-#include <iostream>
-#include <cstdlib>
-#include <thread> // C++11
-#include <chrono> // C++11
-using namespace std;
+#ifndef THREADEDMERGESORT_H
+#define THREADEDMERGESORT_H
+
+#include "commonHeader.h"
 
 template<typename T>
 void myMerge(const T *const source, T *const dest, const long min, const long mid, const long max) {
@@ -51,5 +50,5 @@ void myMergesort(T * target, const long length, const short numThreads = 1 ) {
   delete [] auxiliary;
 }
 
-
+#endif
 

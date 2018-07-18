@@ -1,15 +1,18 @@
 #include "threadedMergeSort.h"
-
+#include "threadedQuickSort.h"
 int main() {
   short numThreads;
   long dataSize;
+  short alg;
+  cout << "select sorting algorithm (0-quit 1-quicksort 2-mergesort):";
+  cin >> alg;
   cout << "# threads: ";
   cin >> numThreads;
   cout << "# data elements: ";
   cin >> dataSize;
   
-  while(numThreads > 0 && dataSize > 0) {
-    unsigned long long * bob = new unsigned long long[dataSize];
+  while(numThreads > 0 && dataSize > 0 && alg > 0) {
+    long * bob = new long[dataSize];
     bool failure = false;
     for( long j = 0; j < dataSize; j++ ) {
       bob[j] = rand() % dataSize;
@@ -19,7 +22,14 @@ int main() {
     chrono::time_point<std::chrono::system_clock> start, end;
     
     start = chrono::system_clock::now();
-    myMergesort( bob, dataSize, numThreads);
+    switch(alg){
+      case 1:
+        myQuicksort( bob, dataSize, numThreads ) ;
+        break;
+      case 2:
+        myMergesort( bob, dataSize, numThreads);
+        break;
+    }
     end = chrono::system_clock::now();
     
     chrono::duration<double> elapsed_seconds = end - start;
@@ -35,12 +45,16 @@ int main() {
     cout << (failure?"test failed":"test passed") << endl;
     cout << endl;
     delete [] bob;
-
-    cout << "# threads (0 to quit): ";
-    cin >> numThreads;
-    if( numThreads > 0 ) {
-      cout << "# data elements (0 to quit): ";
-      cin >> dataSize;
+    
+    cout << "select sorting algorithm (0-quit 1-quicksort 2-mergesort):";
+    cin >> alg;
+    if( alg > 0 ) {
+      cout << "# threads (0 to quit): ";
+      cin >> numThreads;
+      if( numThreads > 0 ) {
+        cout << "# data elements (0 to quit): ";
+        cin >> dataSize;
+      }
     }
     
   }
