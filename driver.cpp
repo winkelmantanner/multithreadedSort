@@ -1,15 +1,24 @@
 #include "threadedMergesort.h"
 #include "threadedQuicksort.h"
+
+void getInput( short & alg, short & numThreads, long & dataSize ) {
+  cout << "select sorting algorithm (0-quit 1-quicksort 2-mergesort): ";
+  cin >> alg;
+  if( alg > 0 ) {
+    cout << "# threads (0 to quit): ";
+    cin >> numThreads;
+    if( numThreads > 0 ) {
+      cout << "# data elements (0 to quit): ";
+      cin >> dataSize;
+    }
+  }
+}
+
 int main() {
   short numThreads;
   long dataSize;
   short alg;
-  cout << "select sorting algorithm (0-quit 1-quicksort 2-mergesort): ";
-  cin >> alg;
-  cout << "# threads: ";
-  cin >> numThreads;
-  cout << "# data elements: ";
-  cin >> dataSize;
+  getInput( alg, numThreads, dataSize );
   
   while(numThreads > 0 && dataSize > 0 && alg > 0) {
     long * bob = new long[dataSize];
@@ -41,21 +50,11 @@ int main() {
         break;
       }
     }
-    cout << (failure?"test failed":"test passed") << endl;
+    cout << (failure ? "test failed" : "test passed") << endl;
     cout << endl;
     delete [] bob;
     
-    cout << "select sorting algorithm (0-quit 1-quicksort 2-mergesort): ";
-    cin >> alg;
-    if( alg > 0 ) {
-      cout << "# threads (0 to quit): ";
-      cin >> numThreads;
-      if( numThreads > 0 ) {
-        cout << "# data elements (0 to quit): ";
-        cin >> dataSize;
-      }
-    }
-    
+    getInput( alg, numThreads, dataSize );
   }
 
   return 0;
