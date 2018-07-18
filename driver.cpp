@@ -1,4 +1,4 @@
-#include "threadedMergeSort.h"
+#include "threadedMergesort.h"
 #include "threadedQuicksort.h"
 int main() {
   short numThreads;
